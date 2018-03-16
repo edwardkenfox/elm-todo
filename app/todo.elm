@@ -1,19 +1,26 @@
 import Html exposing (..)
-import Html.Events exposing (onClick)
+import Html.Attributes exposing (..)
+import Html.Events exposing (onClick, onInput)
 
 main =
-  Html.beginngerProgram { model = model, view = view, update = update }
+  Html.beginnerProgram { model = model, view = view, update = update }
 
-type alias Todo = String
+type alias Todo = { input : String, todos : List String }
+
 model : Todo
-todo = ""
+model = {input = "", todos = []}
 
-type Msg = AddTodo String
+type Msg = AddTodo | NewTodo String
 
 update : Msg -> Todo -> Todo
+update msg model =
+  case msg of
+    AddTodo -> { model | input = "", todos = model.todos ++ [model.input] }
+    NewTodo s -> { model | input = s}
 
-
+view : Todo -> Html Msg
 view model =
   div []
-    [ input [ type_ "text", placeholder "TODO" ]]
-    [ button [ onClick AddTodo ] [ text "Add TODO" ]
+    ([ input [ type_ "text", placeholder "TODO", onInput NewTodo ] []
+    , button [ onClick AddTodo] [ text "Add TODO" ]
+    ] ++ List.map (\s -> div [] [text s]) model.todos)
